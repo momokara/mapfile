@@ -144,7 +144,11 @@ function isBan(fileName) {
   }
 }
 
-// 更新文件树文件
+/**
+ * @description: 获取并保存文件树
+ * @param {string} dir 文件目录路径
+ * @param {string} outputPath 输出文件路径
+ */
 async function savefilemap(dir = `${path.resolve(__dirname, '..', '')}`, outputPath = `${path.resolve(__dirname, '..', 'FILEMAP.md')}`) {
   let treeData = await listFilemap({ dir }).then(res => res.output);
   let _output = `\`\`\`\n${treeData}\n\`\`\``;

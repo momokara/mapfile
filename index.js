@@ -12,5 +12,5 @@ program
   .parse(process.argv)
 
 const { logmenu } = require('./bin/menu');
-// logmenu();
+logmenu();
 module.exports=require('./bin/dirTools')
