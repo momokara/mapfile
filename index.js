@@ -2,8 +2,7 @@
 const commander = require('commander');
 const program = new commander.Command();
 
-let { version } = require('./package.json')
-console.log(version)
+let { version } = require('./package.json');
 // 预处理下参数
 program
   .version(version)
@@ -12,5 +11,6 @@ program
   })
   .parse(process.argv)
 
-const { logmenu } = require('./bin/menu')
-logmenu()
+const { logmenu } = require('./bin/menu');
+// logmenu();
+module.exports=require('./bin/dirTools')

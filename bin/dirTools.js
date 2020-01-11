@@ -39,52 +39,52 @@ async function listFilemap({
   await files.forEach(async (file, index) => {
     let tempdir = `${dir}\\${file}`;
     if (isBan(tempdir)) {
-      return console.info(`${tempdir} 在禁止遍历列表不处理`)
+      return console.info(`${tempdir} 在禁止遍历列表不处理`);
     }
     // 文件是否是结尾
-    let isEnd = index === files.length - 1
+    let isEnd = index === files.length - 1;
     // 显示的行内容
     let dirDeepShow = parents.reduce((total, cur) => {
       return ` ${cur}   ` + total
     }, (isEnd ? ' └── ' : ' ├── '))
     // 介绍的内容
-    let descInfo = ' '
+    let descInfo = ' ';
     // 填充的图标
-    let fillIcon = ' '
+    let fillIcon = ' ';
     try {
       // 常识更新文件说明
       if (fileInfo[file]) {
-        descInfo = fileInfo[file]
+        descInfo = fileInfo[file];
       } else if (isFile(tempdir)) {
-        descInfo = fs.readFileSync(tempdir, 'utf-8')
-        descInfo = descInfo.split('@description:')
-        descInfo = descInfo[1]
+        descInfo = fs.readFileSync(tempdir, 'utf-8');
+        descInfo = descInfo.split('@description:');
+        descInfo = descInfo[1];
         if (descInfo) {
-          descInfo = descInfo.split(/\n/)
-          descInfo = descInfo[0]
+          descInfo = descInfo.split(/\n/);
+          descInfo = descInfo[0];
           // 移除空格
-          descInfo = descInfo.replace(/\ +/g, "")
+          descInfo = descInfo.replace(/\ +/g, "");
         } else {
-          descInfo = fileType
+          descInfo = fileType;
         }
-        fillIcon = '·'
+        fillIcon = '·';
       } else {
         // 文件夹的处理
-        descInfo = typeIcon['file'] || ''
+        descInfo = typeIcon['file'] || '';
       }
     } catch (error) { }
-    let menuInfo = `${dirDeepShow}${file}`
+    let menuInfo = `${dirDeepShow}${file}`;
     // 处理说明位填充空格对齐 这个80 是顶宽距离 
-    descInfo = `${getFileIcon(file)}${descInfo || ''}`
-    let srcLength = menuInfo.length || 0
-    let filliconlength = fileLength - srcLength
-    filliconlength = filliconlength > 0 ? filliconlength : 5
-    let fillSpace = new Array(filliconlength).fill(descInfo ? fillIcon : '')
+    descInfo = `${getFileIcon(file)}${descInfo || ''}`;
+    let srcLength = menuInfo.length || 0;
+    let filliconlength = fileLength - srcLength;
+    filliconlength = filliconlength > 0 ? filliconlength : 5;
+    let fillSpace = new Array(filliconlength).fill(descInfo ? fillIcon : '');
     fillSpace = fillSpace.reduce((total, current) => {
       return '' + total + current
     })
 
-    let desc = `${fillSpace}${descInfo}`
+    let desc = `${fillSpace}${descInfo}`;
     // 填充数据
     output += `${menuInfo}${desc}\n`;
     // 如果是文件的处理
@@ -94,9 +94,9 @@ async function listFilemap({
         full: tempdir // 完整路径
       });
     } else {
-      let childParents = [].concat(...parents)
+      let childParents = [].concat(...parents);
       // 处理父组件 是不是 最后一个
-      childParents.unshift(isEnd ? ' ' : '|')
+      childParents.unshift(isEnd ? ' ' : '|');
       // 不是文件就是文件夹
       _objRes.children[file] = await listFilemap({ dir: tempdir, parents: childParents });
     }
@@ -119,10 +119,10 @@ function isFile(fileName) {
 }
 
 function getFileIcon(fileName) {
-  const types = fileName.split('.')
-  let icon = typeIcon[types[1]] || typeIcon[types[2]]
+  const types = fileName.split('.');
+  let icon = typeIcon[types[1]] || typeIcon[types[2]];
   if (icon === undefined) {
-    icon = ''
+    icon = '';
   }
   return icon
 }
@@ -133,8 +133,8 @@ function getFileIcon(fileName) {
  * @return {boolean}  true-在列表 / false-不在列表
  */
 function isBan(fileName) {
-  fileName = fileName.split('\\')
-  fileName = fileName[fileName.length - 1]
+  fileName = fileName.split('\\');
+  fileName = fileName[fileName.length - 1];
   if (/^\./.test(fileName)) {
     return true
   } else if (banList.indexOf(fileName) > -1) {
@@ -145,28 +145,26 @@ function isBan(fileName) {
 }
 
 // 更新文件树文件
-async function savefilemap() {
-  let dir = path.resolve(__dirname, '..', '')
-  let treeData = await listFilemap({ dir }).then(res => res.output)
-  let _output = `\`\`\`\n${treeData}\n\`\`\``
-  let filePath = `${path.resolve(__dirname, '..', 'FILEMAP.md')}`
-  fs.writeFileSync(filePath, _output)
-  console.log(filePath, '创建完成')
+async function savefilemap(dir = `${path.resolve(__dirname, '..', '')}`, outputPath = `${path.resolve(__dirname, '..', 'FILEMAP.md')}`) {
+  let treeData = await listFilemap({ dir }).then(res => res.output);
+  let _output = `\`\`\`\n${treeData}\n\`\`\``;
+  fs.writeFileSync(outputPath, _output)
+  console.log(outputPath, '创建完成');
 }
 
 // 便利当前目录下 的js 合并
 function mapDir(d) {
-  const tree = {}
-  const [dirs, files] = _(fs.readdirSync(d)).partition(p => fs.statSync(path.join(d, p)).isDirectory())
+  const tree = {};
+  const [dirs, files] = _(fs.readdirSync(d)).partition(p => fs.statSync(path.join(d, p)).isDirectory());
   // 映射文件夹
   dirs.forEach(dir => {
-    tree[dir] = mapDir(path.join(d, dir))
+    tree[dir] = mapDir(path.join(d, dir));
   })
 
   // 映射文件
   files.forEach(file => {
     if (path.extname(file) === '.js') {
-      tree[path.basename(file, '.js')] = require(path.join(d, file))
+      tree[path.basename(file, '.js')] = require(path.join(d, file));
     }
   })
 
