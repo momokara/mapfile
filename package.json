@@ -1,6 +1,6 @@
 {
   "name": "momokaralistfiles",
-  "version": "1.0.08",
+  "version": "1.0.09",
   "description": "遍历文件树",
   "author": "momokarabugs",
   "license": "ISC",
@@ -11,6 +11,6 @@
     "node_echocolor": "^1.0.3"
   },
   "bin": {
-    "mapfile": "index.js"
+    "mapfile": "bin/menu.js"
   }
 }

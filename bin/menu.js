@@ -5,6 +5,18 @@ let inquirer = require('inquirer');
 inquirer.registerPrompt('suggest', require('inquirer-prompt-suggest'));
 const path = require('path');
 
+const commander = require('commander');
+const program = new commander.Command();
+
+let { version } = require('../package.json');
+// 预处理下参数
+program
+  .version(version)
+  .on('--help', function () {
+    console.log('没写参数,帮助也没用的 ☺')
+  })
+  .parse(process.argv)
+
 const { savefilemap } = require('./dirTools');
 
 // 一级菜单
@@ -20,7 +32,9 @@ let menus = [
   }
 ]
 
-
+const showMenu = (menus) => {
+  return inquirer.prompt(menus);
+}
 
 const logmenu = () => {
   showMenu(menus).then(res => {
@@ -61,9 +75,10 @@ const logmenu = () => {
   })
 }
 
-const showMenu = (menus) => {
-  return inquirer.prompt(menus);
-}
+
+
+logmenu();
+
 
 module.exports = {
   logmenu
