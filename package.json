@@ -1,0 +1,15 @@
+{
+  "name": "momokaralistfiles",
+  "version": "1.0.06",
+  "description": "遍历文件树",
+  "author": "momokarabugs",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^4.0.1",
+    "inquirer": "^7.0.3",
+    "node_echocolor": "^1.0.3"
+  },
+  "bin": {
+    "mapfile": "index.js"
+  }
+}
