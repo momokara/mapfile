@@ -1,0 +1,22 @@
+{
+  "fileInfo": {
+    "data": "📁数据--文件",
+    "bin": "使用function"
+  },
+  "typeIcon": {
+    "scss": "🍧",
+    "file": "📁",
+    "action": "📍",
+    "reducers": "💾",
+    "class": "🔖",
+    "html": "📄",
+    "d": "🚩",
+    "png": "🎨",
+    "tsx": "📜"
+  },
+  "banList": [
+    "node_modules",
+    "static",
+    "dist"
+  ]
+}

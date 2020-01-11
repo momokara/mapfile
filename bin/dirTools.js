@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const { color } = require('node_echocolor')
 
-const { fileInfo, typeIcon, banList } = require('../data/fileMapData.json')
+let { fileInfo, typeIcon, banList } = require('../data/fileMapConfig.json')
 /**
  * @description: 获取文件树
  * @param {string} dir 文件目录路径
@@ -29,10 +29,22 @@ async function listFilemap({
   let files = fs.readdirSync(dir, (err, files) => {
     return files;
   });
+
   if (firstRun) {
     let fileNames = dir.split('\\')
     // 写的第一行内容
     output = `文件目录:\n~${fileNames[fileNames.length - 1]}\n`;
+    let filesSet = new Set(files)
+    if (filesSet.has('fileMapConfig.json')) {
+      try {
+        const fileMapConfig = require(path.resolve(dir, 'fileMapConfig.json'))
+        fileInfo = Object.assign(fileInfo, fileMapConfig.fileInfo)
+        typeIcon = Object.assign(typeIcon, fileMapConfig.typeIcon)
+        banList = Object.assign(banList, fileMapConfig.banList)
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
   firstRun = false;
   // 遍历文件

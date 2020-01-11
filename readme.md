@@ -48,5 +48,33 @@ module.exports = mapDir(dir)
 
 ```
 
+```
+会读取 第一次遍历目录下的 fileMapConfig.json 文件 作为配置
+fileInfo:文件说明; typeIcon：后缀类型的图标; banList:不遍历的文件夹;
+{
+  "fileInfo": {
+    "data": "📁数据文件",
+    "bin": "使用function"
+  },
+  "typeIcon": {
+    "scss": "🍧",
+    "file": "📁",
+    "action": "📍",
+    "reducers": "💾",
+    "class": "🔖",
+    "html": "📄",
+    "d": "🚩",
+    "png": "🎨",
+    "tsx": "📜"
+  },
+  "banList": [
+    "node_modules",
+    "static",
+    "dist"
+  ]
+}
+
+```
+
 data 文件夹下有一些配置可以修改
 [github](https://github.com/momokara/mapfile)
