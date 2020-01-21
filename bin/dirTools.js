@@ -29,9 +29,8 @@ async function listFilemap({ dir = path.resolve(__dirname, '..', 'src'), parents
 	});
 
 	if (firstRun) {
-		let fileNames = dir.split('\\');
 		// 写的第一行内容
-		output = `文件目录:\n~${fileNames[fileNames.length - 1]}\n`;
+		output = `文件目录:\n~${path.basename(dir)}\n`;
 		let filesSet = new Set(files);
 		if (filesSet.has('fileMapConfig.json')) {
 			try {
@@ -143,8 +142,7 @@ function getFileIcon(fileName) {
  * @return {boolean}  true-在列表 / false-不在列表
  */
 function isBan(fileName) {
-	fileName = fileName.split('\\');
-	fileName = fileName[fileName.length - 1];
+	fileName = path.basename(fileName)
 	if (/^\./.test(fileName)) {
 		return true;
 	} else if (banList.indexOf(fileName) > -1) {

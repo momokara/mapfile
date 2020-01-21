@@ -3,7 +3,7 @@
 ## 当前的命令是 mapfile
 
 ## 命令行使用
-
+修改了在osx的问题
 ```
 全局安装：npm install -g momokaralistfiles
 输入: mapfile
