@@ -55,48 +55,8 @@ async function listFilemap(
 		}
 		// 文件是否是结尾
 		let isEnd = index === files.length - 1;
-		// 显示的行内容
-		let dirDeepShow = parents.reduce((total, cur) => {
-			return ` ${cur}   ` + total;
-		}, isEnd ? ' └── ' : ' ├── ');
-		// 介绍的内容
-		let descInfo = ' ';
-		// 填充的图标
-		let fillIcon = ' ';
-		try {
-			// 更新文件说明
-			if (fileInfo[file]) {
-				descInfo = fileInfo[file];
-			} else if (isFile(tempdir)) {
-				descInfo = fs.readFileSync(tempdir, 'utf-8');
-				descInfo = descInfo.split('@description:');
-				descInfo = descInfo[1];
-				if (descInfo) {
-					descInfo = descInfo.split(/\n/);
-					descInfo = descInfo[0];
-					// 移除空格
-					descInfo = descInfo.replace(/\ +/g, '');
-				} else {
-					descInfo = fileType;
-				}
-				fillIcon = '·';
-			} else {
-				// 文件夹的处理
-				descInfo = typeIcon['file'] || '';
-			}
-		} catch (error) {}
-		let menuInfo = `${dirDeepShow}${file}`;
-		// 处理说明位填充空格对齐 这个80 是顶宽距离
-		descInfo = `${getFileIcon(file)}${descInfo || ''}`;
-		let srcLength = menuInfo.length || 0;
-		let filliconlength = fileLength - srcLength;
-		filliconlength = filliconlength > 0 ? filliconlength : 5;
-		let fillSpace = new Array(filliconlength).fill(descInfo ? fillIcon : '');
-		fillSpace = fillSpace.reduce((total, current) => {
-			return '' + total + current;
-		});
 
-		let desc = `${fillSpace}${descInfo}`;
+		let { desc, menuInfo } = getfileDescInfo({ tempdir, parents, isEnd, file, fileLength });
 		// 填充数据
 		output += `${menuInfo}${desc}\n`;
 		// 如果是文件的处理
@@ -110,7 +70,7 @@ async function listFilemap(
 			// 处理父组件 是不是 最后一个
 			childParents.unshift(isEnd ? ' ' : '|');
 			// 不是文件就是文件夹
-			_objRes.children[file] = await listFilemap({ dir: tempdir, parents: childParents });
+			_objRes.children[file] = await listFilemap({ dir: tempdir, parents: childParents, showlog });
 		}
 	});
 
@@ -120,7 +80,52 @@ async function listFilemap(
 	return _objRes;
 }
 
-//
+// 获取文件信息
+function getfileDescInfo({ tempdir, parents, isEnd, file, fileLength }) {
+	// 显示的行内容
+	let dirDeepShow = parents.reduce((total, cur) => {
+		return ` ${cur}   ` + total;
+	}, isEnd ? ' └── ' : ' ├── ');
+	// 介绍的内容
+	let descInfo = ' ';
+	// 填充的图标
+	let fillIcon = ' ';
+	try {
+		// 更新文件说明
+		if (fileInfo[file]) {
+			descInfo = fileInfo[file];
+		} else if (isFile(tempdir)) {
+			descInfo = fs.readFileSync(tempdir, 'utf-8');
+			descInfo = descInfo.split('@description:');
+			descInfo = descInfo[1];
+			if (descInfo) {
+				descInfo = descInfo.split(/\n/);
+				descInfo = descInfo[0];
+				// 移除空格
+				descInfo = descInfo.replace(/\ +/g, '');
+			} else {
+				descInfo = fileType;
+			}
+			fillIcon = '·';
+		} else {
+			// 文件夹的处理
+			descInfo = typeIcon['file'] || '';
+		}
+	} catch (error) {}
+	let menuInfo = `${dirDeepShow}${file}`;
+	// 处理说明位填充空格对齐 这个80 是顶宽距离
+	descInfo = `${getFileIcon(file)}${descInfo || ''}`;
+	let srcLength = menuInfo.length || 0;
+	let filliconlength = fileLength - srcLength;
+	filliconlength = filliconlength > 0 ? filliconlength : 5;
+	let fillSpace = new Array(filliconlength).fill(descInfo ? fillIcon : '');
+	fillSpace = fillSpace.reduce((total, current) => {
+		return '' + total + current;
+	});
+
+	return { desc: `${fillSpace}${descInfo}`, menuInfo };
+}
+
 /**
  * @description: 判断制定路径是否是文件
  * @param {type} fileName 文件名
