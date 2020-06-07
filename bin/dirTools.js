@@ -8,20 +8,23 @@ let { fileInfo, typeIcon, banList } = require('../data/fileMapConfig.json');
  * @description: 获取文件树
  * @param {string} dir 文件目录路径
  * @param {string[]} parents 父级填充的内容
+ * @param {boolean} showlog 显示log
  * @param {number} fileLength 显示的宽度
  * @return {object} 遍历的路径树
  */
 let firstRun = true; // listFilemap首次执行
 let output = '';
-async function listFilemap({ dir = path.resolve(__dirname, '..', 'src'), parents = [] }, fileLength = 65) {
+async function listFilemap(
+	{ dir = path.resolve(__dirname, '..', 'src'), parents = [], showlog = true },
+	fileLength = 65
+) {
 	let _objRes = {
 		dir: dir,
 		childFiles: [],
 		children: {}
 	};
-
 	if (firstRun && isFile(dir)) {
-		return console.error(color().add('red').echo(`${dir}: 不是文件夹`));
+		return showlog ? console.error(color().add('red').echo(`${dir}: 不是文件夹`)) : '';
 	}
 	// 读取目录下的文件夹
 	let files = fs.readdirSync(dir, (err, files) => {
@@ -30,7 +33,7 @@ async function listFilemap({ dir = path.resolve(__dirname, '..', 'src'), parents
 
 	if (firstRun) {
 		// 写的第一行内容
-		output = `文件目录:\n~${path.basename(dir)}\n`;
+		output = `路径：\n${path.dirname(dir)}\n${path.basename(dir)}\n`;
 		let filesSet = new Set(files);
 		if (filesSet.has('fileMapConfig.json')) {
 			try {
@@ -48,7 +51,7 @@ async function listFilemap({ dir = path.resolve(__dirname, '..', 'src'), parents
 	await files.forEach(async (file, index) => {
 		let tempdir = `${path.resolve(dir, file)}`;
 		if (isBan(tempdir)) {
-			return console.info(`${tempdir} 在禁止遍历列表不处理`);
+			return showlog ? console.info(`${tempdir} 在禁止遍历列表不处理`) : '';
 		}
 		// 文件是否是结尾
 		let isEnd = index === files.length - 1;
@@ -61,7 +64,7 @@ async function listFilemap({ dir = path.resolve(__dirname, '..', 'src'), parents
 		// 填充的图标
 		let fillIcon = ' ';
 		try {
-			// 常识更新文件说明
+			// 更新文件说明
 			if (fileInfo[file]) {
 				descInfo = fileInfo[file];
 			} else if (isFile(tempdir)) {
@@ -142,7 +145,7 @@ function getFileIcon(fileName) {
  * @return {boolean}  true-在列表 / false-不在列表
  */
 function isBan(fileName) {
-	fileName = path.basename(fileName)
+	fileName = path.basename(fileName);
 	if (/^\./.test(fileName)) {
 		return true;
 	} else if (banList.indexOf(fileName) > -1) {
@@ -156,13 +159,16 @@ function isBan(fileName) {
  * @description: 获取并保存文件树
  * @param {string} dir 文件目录路径
  * @param {string} outputPath 输出文件路径
+ * @param {string} outputPath 输出文件路径
+ * @param {boolean} showlog 显示log
  */
 async function savefilemap(
 	dir = `${path.resolve(__dirname, '..', '')}`,
-	outputPath = `${path.resolve(__dirname, '..', 'FILEMAP.md')}`
+	outputPath = `${path.resolve(__dirname, '..', 'FILEMAP.md')}`,
+	showlog = false
 ) {
-	let treeData = await listFilemap({ dir }).then((res) => res.output);
-	let _output = `\`\`\`\n${treeData}\n\`\`\``;
+	let treeData = await listFilemap({ dir, showlog }).then((res) => res.output);
+	let _output = `# 文件目录\n\n\`\`\`${treeData}\n\`\`\`\n`;
 	fs.writeFileSync(outputPath, _output);
 	console.log(outputPath, '创建完成');
 }
